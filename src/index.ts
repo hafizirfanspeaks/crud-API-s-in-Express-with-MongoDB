@@ -1,28 +1,22 @@
-import express from "express";
-import type { Application } from "express";
-import mongoose from "mongoose";
-import bodyParser from "body-parser";
-import dotenv from "dotenv";
-import route from "./Route/userRoute.js";
+import express from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import productRouter from './Route/productRoute.js'; // We will use this for products
 
 dotenv.config();
 
-const app: Application = express();
+const app = express();
+app.use(express.json());
 
-app.use(bodyParser.json());
+// Routes
+app.use('/api/products', productRouter);
 
-const PORT: number = Number(process.env.PORT) || 3000;
-const MONGOURL: string = process.env.MONGO_URL as string;
+const PORT = process.env.PORT || 8000;
+const MONGO_URL = process.env.MONGO_URL as string;
 
-mongoose.connect(MONGOURL).then(() => {
-    console.log("Database Connected Successfully");
-
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
+mongoose.connect(MONGO_URL)
+  .then(() => {
+    console.log('Connected to MongoDB: zod');
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
-  .catch((error: Error) => {
-    console.error("Database connection error:", error);
-  });
-app.use("/api/user", route);
-
+  .catch((err) => console.error('MongoDB connection error:', err));
